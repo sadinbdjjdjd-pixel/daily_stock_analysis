@@ -1,0 +1,9 @@
+name: 测试 Worker
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          curl -s -X POST "https://telegram-relay.sadinbdjjjd.workers.dev/sendMessage" -H "Content-Type: application/json" -d '{"chat_id":"8606433179","text":"🧪 Worker测试成功！"}'
